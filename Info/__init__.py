@@ -1,12 +1,13 @@
-import redis
+from redis import StrictRedis
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
 
 from flask_wtf.csrf import CSRFProtect
-from config import Config
+from config import config_dict
 
 db = SQLAlchemy()
+redis_store = None  # type:StrictRedis
 
 
 def create_app(config_name):
@@ -15,11 +16,11 @@ def create_app(config_name):
     app = Flask(__name__)
 
     # 设置app应用的config配置
-    app.config.from_object(Config)
+    app.config.from_object(config_dict[config_name])
     # 构建数据库对象
     db.init_app(app)
     # 构建redis数据库对象
-    redis_store = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
+    redis_store = StrictRedis(host=config_dict[config_name].REDIS_HOST, port=config_dict[config_name].REDIS_PORT)
     # 开启csrf保护
     CSRFProtect(app)
     # 设置session保存位置

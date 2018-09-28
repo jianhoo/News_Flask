@@ -28,7 +28,7 @@ class ReleaseConfig(Config):
     pass
 
 
-config = {
+config_dict = {
     "debug": DebugConfig,
     "release": ReleaseConfig
 }
