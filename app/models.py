@@ -1,8 +1,8 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from info import constants
-from info import db
+from app import constants
+from app import db
 
 
 class BaseModel(object):

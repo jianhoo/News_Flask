@@ -25,7 +25,7 @@ CLICK_RANK_MAX_NEWS = 6
 # 管理员页面用户每页多最数据条数
 ADMIN_USER_PAGE_MAX_COUNT = 10
 
-# 管理员页面新闻每页多最数据条数
+# 管理员页面新闻每页最多数据条数
 ADMIN_NEWS_PAGE_MAX_COUNT = 10
 
 

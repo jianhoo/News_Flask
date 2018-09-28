@@ -1,8 +1,9 @@
 from flask import current_app
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from info import create_app, db
-from info import models
+from app import create_app, db
+from app import models
+from app import constants
 
 app = create_app('debug')
 
