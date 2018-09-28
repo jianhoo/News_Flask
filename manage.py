@@ -1,33 +1,21 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_session import Session
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-import redis
-from config import Config
+from Info import create_app,db
 
-app = Flask(__name__)
-
-
-# 设置app应用的config配置
-app.config.from_object(Config)
-# 构建数据库对象
-db = SQLAlchemy(app)
-# 构建redis数据库对象
-redis_store = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
-Session(app)
+app = create_app('debug')
 
 # 创建管理对象
 manager = Manager(app)
+# 数据库迁移
 Migrate(app, db)
 # 添加db命令
 manager.add_command('db', MigrateCommand)
 
 
-@app.route('/')
+@app.route('/index')
 def hello_world():
-    return 'Hello World!'
+    return 'index'
 
 
 if __name__ == '__main__':
-    app.run()
+    app.manage()
