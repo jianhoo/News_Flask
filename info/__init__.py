@@ -44,4 +44,12 @@ def create_app(config_name):
     # 设置session保存位置
     Session(app)
 
+    register_index(app)
+
     return app
+
+
+def register_index(app):
+    # 注册蓝图
+    from info.modules.index import index_bp
+    app.register_blueprint(index_bp)

@@ -8,7 +8,7 @@ class Config(object):
     # 默认日志等级
     LOG_LEVEL = logging.DEBUG
     # 配置连接的数据库
-    SQLALCHEMY_DATABASE_URI = "mysql+dbmysql://root:A92b11c20@127.0.0.1:3306/information"
+    SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://root:A92b11c20@127.0.0.1:3306/information"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     # 配置redis数据库
     REDIS_HOST = "127.0.0.1"
