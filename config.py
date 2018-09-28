@@ -1,8 +1,12 @@
+import logging
+
 import redis
 
 
 class Config(object):
     """项目配置信息"""
+    # 默认日志等级
+    LOG_LEVEL = logging.DEBUG
     # 配置连接的数据库
     SQLALCHEMY_DATABASE_URI = "mysql+dbmysql://root:A92b11c20@127.0.0.1:3306/information"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -25,7 +29,8 @@ class DebugConfig(Config):
 
 class ReleaseConfig(Config):
     """正式环境下的配置"""
-    pass
+    DEBUG = False
+    LOG_LEVEL = logging.ERROR
 
 
 config_dict = {
