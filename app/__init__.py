@@ -15,7 +15,6 @@ redis_store = None  # type:StrictRedis
 
 def setup_log(config_name):
     """配置日志"""
-
     # 设置日志的记录等级
     logging.basicConfig(level=config_dict[config_name].LOG_LEVEL)  # 调试debug级
     # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小、保存的日志文件个数上限
@@ -30,15 +29,18 @@ def setup_log(config_name):
 
 def create_app(config_name):
     """通过传入不同的配置名字,初始化其对应配置的应用实例"""
-
     app = Flask(__name__)
+    setup_log(config_name)
 
     # 设置app应用的config配置
     app.config.from_object(config_dict[config_name])
     # 构建数据库对象
     db.init_app(app)
     # 构建redis数据库对象
-    redis_store = StrictRedis(host=config_dict[config_name].REDIS_HOST, port=config_dict[config_name].REDIS_PORT)
+    global redis_store
+    redis_store = StrictRedis(host=config_dict[config_name].REDIS_HOST,
+                              port=config_dict[config_name].REDIS_PORT,
+                              decode_responses=True)
     # 开启csrf保护
     CSRFProtect(app)
     # 设置session保存位置
@@ -46,8 +48,15 @@ def create_app(config_name):
 
     # 首页蓝图注册
     register_index(app)
+    # 登录注册模块的蓝图注册
+    register_passport(app)
 
     return app
+
+
+def register_passport(app):
+    from app.modules.passport import passport_bp
+    app.register_blueprint(passport_bp)
 
 
 def register_index(app):
