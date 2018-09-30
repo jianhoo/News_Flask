@@ -198,7 +198,24 @@ $(function(){
 
         })
     })
-})
+});
+
+// 退出登录
+function logout() {
+    $.ajax({
+        //设置url
+        url:"/passport/logout",
+        type:"post",
+        success:function (resp) {
+            if(resp.errno == "0"){
+                location.reload()
+            }else{
+
+            }
+        }
+
+    })
+}
 
 var imageCodeId = ""
 
