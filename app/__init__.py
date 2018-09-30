@@ -42,7 +42,7 @@ def create_app(config_name):
                               port=config_dict[config_name].REDIS_PORT,
                               decode_responses=True)
     # 开启csrf保护
-    CSRFProtect(app)
+    # CSRFProtect(app)
     # 设置session保存位置
     Session(app)
 
