@@ -7,6 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
 
 from flask_wtf.csrf import CSRFProtect, generate_csrf
+
+from app.utils.common import do_index_class
 from config import config_dict
 
 db = SQLAlchemy()
@@ -56,6 +58,9 @@ def create_app(config_name):
 
     # 设置session保存位置
     Session(app)
+
+    # 添加自定义过滤器
+    app.add_template_filter(do_index_class, "index_class")
 
     # 首页蓝图注册
     register_index(app)
