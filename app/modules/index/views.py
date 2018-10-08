@@ -103,4 +103,4 @@ def get_news_list():
         "total_page": total_page
     }
 
-    return jsonify(errno=RET.OK, errmsg="查询新闻列表数据成功", data=data )
+    return jsonify(errno=RET.OK, errmsg="查询新闻列表数据成功", data=data)

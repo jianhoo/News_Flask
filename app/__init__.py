@@ -66,6 +66,8 @@ def create_app(config_name):
     register_index(app)
     # 登录注册模块的蓝图注册
     register_passport(app)
+    # 新闻模块的蓝图注册
+    register_news(app)
 
     return app
 
@@ -79,3 +81,9 @@ def register_index(app):
     # 注册蓝图
     from app.modules.index import index_bp
     app.register_blueprint(index_bp)
+
+
+def register_news(app):
+    # 注册蓝图
+    from app.modules.news import news_bp
+    app.register_blueprint(news_bp)
