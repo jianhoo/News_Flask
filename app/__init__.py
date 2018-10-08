@@ -2,13 +2,13 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from redis import StrictRedis
-from flask import Flask
+from flask import Flask, g, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
 
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 
-from app.utils.common import do_index_class
+from app.utils.common import do_index_class, user_login_data
 from config import config_dict
 
 db = SQLAlchemy()
@@ -55,6 +55,13 @@ def create_app(config_name):
         # 通过cookie将值传给前端
         response.set_cookie("csrf_token", csrf_token)
         return response
+
+    @app.errorhandler(404)
+    @user_login_data
+    def page_not_found(_):
+        user = g.user
+        data = {"user_info": user.to_dict() if user else None}
+        return render_template("news/404.html", data=data)
 
     # 设置session保存位置
     Session(app)
