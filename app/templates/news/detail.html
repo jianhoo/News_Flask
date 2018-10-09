@@ -29,10 +29,10 @@
         {# safe表明内容是安全的需要解析输出       #}
         {{ data.news.content | safe }}
 
-        <a href="javascript:;" class="collected block-center" data-newid="{{ data.news.id }}"
+        <a href="javascript:;" class="collected block-center" data-newsid="{{ data.news.id }}"
            style="display: {% if data.is_collected %} block
            {% else %} none {% endif %};"><span class="out">已收藏</span><span class="over">取消收藏</span></a>
-        <a href="javascript:;" class="collection block-center" data-newid="{{ data.news.id }}"
+        <a href="javascript:;" class="collection block-center" data-newsid="{{ data.news.id }}"
            style="display: {% if data.is_collected %} none
            {% else %} block {% endif %};">收藏</a>
 
@@ -54,11 +54,10 @@
 
 
         <div class="comment_count">
-            4条评论
+            {{ data.news.comments_count }}条评论
         </div>
 
         <div class="comment_list_con">
-
             {% for comment in data.comments %}
                 <div class="comment_list">
                     <div class="person_pic fl">
