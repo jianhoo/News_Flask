@@ -1,5 +1,5 @@
 from app import constants, db
-from app.models import News, Comment
+from app.models import News, Comment, CommentLike
 from app.utils.common import user_login_data
 from app.utils.response_code import RET
 from . import news_bp
@@ -48,9 +48,29 @@ def news_detail(news_id):
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="评论查询失败")
 
+    # 获取评论点赞
+    comment_like_ids = []
+    if g.user:
+        # 如果当前用户已登录
+        try:
+            comment_ids = [comment.id for comment in comments]
+            if len(comment_ids) > 0:
+                # 取到当前用户在当前新闻的所有评论点赞的记录
+                comment_likes = CommentLike.query.filter(CommentLike.comment_id.in_(comment_ids),
+                                                         CommentLike.user_id == g.user.id).all()
+                # 取出记录中所有的评论id
+                comment_like_ids = [comment_like.comment_id for comment_like in comment_likes]
+        except Exception as e:
+            current_app.logger.error(e)
+
     comment_list = []
-    for item in comments:
-        comment_list.append(item.to_dict())
+    for item in comments if comments else []:
+        comment_dict = item.to_dict()
+        comment_dict["is_like"] = False
+        # 判断用户是否点赞该评论
+        if g.user and item.id in comment_like_ids:
+            comment_dict["is_like"] = True
+        comment_list.append(comment_dict)
 
     data = {
         "news": cur_news.to_dict(),
@@ -149,3 +169,58 @@ def add_news_comment():
 
     # 返回响应
     return jsonify(errno=RET.OK, errmsg="评论成功", data=comment.to_dict())
+
+
+@news_bp.route("/comment_like", methods=['POST'])
+@user_login_data
+def set_comment_like():
+    """评论点赞"""
+    if not g.user:
+        return jsonify(errno=RET.SESSIONERR, errmsg="用户未登陆")
+
+    # 获取参数
+    comment_id = request.json.get("comment_id")
+    news_id = request.json.get("news_id")
+    action = request.json.get("action")
+
+    # 判断参数
+    if not all([comment_id, news_id, action]):
+        return jsonify(errno=RET.PARAMERR, errmsg="参数有误")
+
+    # 查询评论数据
+    try:
+        comment = Comment.query.get(comment_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="数据查询失败")
+
+    if not comment:
+        return jsonify(errno=RET.NODATA, errmsg="评论数据不存在")
+
+    if action == "add":
+        comment_like = CommentLike.query.filter(CommentLike.comment_id == comment_id,
+                                                CommentLike.user_id == g.user.id).first()
+        if not comment_like:
+            comment_like = CommentLike()
+            comment_like.comment_id = comment_id
+            comment_like.user_id = g.user.id
+            db.session.add(comment_like)
+            # 增加点赞条数
+            comment.like_count += 1
+    else:
+        # 删除点赞数据
+        comment_like = CommentLike.query.filter(CommentLike.comment_id == comment_id,
+                                                CommentLike.user_id == g.user.id).first()
+        if comment_like:
+            db.session.delete(comment_like)
+            # 减少点赞条数
+            comment.like_count -= 1
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg="数据更新失败")
+
+    return jsonify(errno=RET.OK, errmsg="操作成功")
