@@ -13,15 +13,70 @@ $(function(){
 
     // 收藏
     $(".collection").click(function () {
-
+        var news_id = $(".collection").attr("data-newid")
+        var action = "collect"
+        var params = {
+            "news_id":news_id,
+            "action":action
+        }
+        $.ajax({
+            url:"/news/news_collect",
+            type:"post",
+            contentType:"application/json",
+            headers:{
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+            data: JSON.stringify(params),
+            success: function (resp) {
+                if(resp.errno == "0"){
+                    // 收藏成功
+                    // 隐藏收藏成功
+                    $(".collection").hide();
+                    // 显示取消收藏按钮
+                    $(".collected").show();
+                }else if(resp.errno == "4101"){
+                    $(".login_form_con").show()
+                }else{
+                    alert(resp.errmsg)
+                }
+            }
+        })
        
-    })
+    });
 
     // 取消收藏
     $(".collected").click(function () {
+        var news_id = $(".collected").attr("data-newid");
+        var action = "cancel_collect"
+        var params = {
+            "news_id": news_id,
+            "action": action
+        };
+        $.ajax({
+            url:"/news/news_collect",
+            type:"post",
+            contentType:"application/json",
+            headers:{
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+            data: JSON.stringify(params),
+            success: function (resp) {
+                if(resp.errno == "0"){
+                    // 收藏成功
+                    // 显示收藏按钮
+                    $(".collection").show();
+                    // 隐藏取消收藏按钮
+                    $(".collected").hide();
+                }else if(resp.errno == "4101"){
+                    $(".login_form_con").show();
+                }else{
+                    alert(resp.errmsg);
+                }
 
+            }
+        })
      
-    })
+    });
 
         // 评论提交
     $(".comment_form").submit(function (e) {
