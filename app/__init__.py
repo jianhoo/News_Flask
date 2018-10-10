@@ -75,6 +75,8 @@ def create_app(config_name):
     register_passport(app)
     # 新闻模块的蓝图注册
     register_news(app)
+    # 个人中心的蓝图注册
+    register_profile(app)
 
     return app
 
@@ -94,3 +96,8 @@ def register_news(app):
     # 注册蓝图
     from app.modules.news import news_bp
     app.register_blueprint(news_bp)
+
+
+def register_profile(app):
+    from app.modules.profile import profile_bp
+    app.register_blueprint(profile_bp)
