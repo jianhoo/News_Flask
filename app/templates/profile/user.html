@@ -7,13 +7,17 @@
 {% block contentBlock %}
     <div class="user_menu_con fl">
         <div class="user_center_pic">
-            <img src="../../static/news/images/user_pic.png" alt="用户图片">
+        <img src="{% if data.user_info.avatar_url %}
+                {{ data.user_info.avatar_url }}
+            {% else %}
+                ../../static/news/images/user_pic.png
+            {% endif %}" alt="用户图标">
         </div>
         <div class="user_center_name">{{ data.user_info.nick_name }}</div>
 
         <ul class="option_list">
             <li class="active"><a href="{{ url_for("profile.get_base_info") }}" target="main_frame">基本资料</a></li>
-            <li><a href="../../static/news/html/user_pic_info.html" target="main_frame">头像设置</a></li>
+            <li><a href="{{ url_for("profile.pic_info") }}" target="main_frame">头像设置</a></li>
             <li><a href="../../static/news/html/user_follow.html" target="main_frame">我的关注</a></li>
             <li><a href="../../static/news/html/user_pass_info.html" target="main_frame">密码修改</a></li>
             <li><a href="../../static/news/html/user_collection.html" target="main_frame">我的收藏</a></li>

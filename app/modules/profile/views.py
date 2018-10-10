@@ -1,5 +1,6 @@
 from flask import g, redirect, render_template, request, jsonify, current_app, session
-from app import user_login_data, db
+from app import user_login_data, db, constants
+from app.utils.pic_storage import pic_storage
 from app.utils.response_code import RET
 from . import profile_bp
 
@@ -68,3 +69,39 @@ def get_base_info():
     # 讲session中保存的数据进行事实更新
     session["nick_name"] = nick_name
     return jsonify(errno=RET.OK, errmsg="更新成功")
+
+
+@profile_bp.route("/pic_info", methods=["GET", "POST"])
+@user_login_data
+def pic_info():
+    user = g.user
+    if request.method == "GET":
+        return render_template("profile/user_pic_info.html", data={"user_info": user.to_dict()})
+
+    # 1.获取到上传的文件
+    try:
+        avatar_file = request.files.get("avatar").read()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.PARAMERR, errmsg="读取文件出错")
+
+    # 2.再将文件上传到奥七牛云
+    try:
+        url = pic_storage(avatar_file)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.THIRDERR, errmsg="上传图片错误")
+
+    # 设置用户模块相关数据
+    user.avatar_url = url
+    # 将数据保存到数据库
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg="数据存储有误")
+
+    # 4.返回上传的结果<avatar_url>
+    return jsonify(errno=RET.OK, errmsg="图片保存成功",
+                   data={"avatar_url": constants.QINIU_DOMIN_PREFIX + url})
