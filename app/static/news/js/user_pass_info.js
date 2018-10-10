@@ -35,7 +35,7 @@ $(function () {
                 if (resp.errno == "0") {
                     // 修改成功
                     alert("修改成功");
-                    indow.location.reload()
+                    window.location.reload()
                 } else {
                     alert(resp.errmsg)
                 }
