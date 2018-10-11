@@ -156,21 +156,22 @@ def user_collection():
     current_page = 1
     total_page = 1
 
-    try:
-        # 进行分页数据查询
-        paginate = user.collection_news.paginate(page_num, constants.USER_COLLECTION_MAX_NEWS, False)
-        # 获取分页数据
-        collections = paginate.items
-        # 获取当前页
-        current_page = paginate.page
-        # 获取总页数
-        total_page = paginate.pages
-    except Exception as e:
-        current_app.logger.error(e)
+    if user:
+        try:
+            # 进行分页数据查询
+            paginate = user.collection_news.paginate(page_num, constants.USER_COLLECTION_MAX_NEWS, False)
+            # 获取分页数据
+            collections = paginate.items
+            # 获取当前页
+            current_page = paginate.page
+            # 获取总页数
+            total_page = paginate.pages
+        except Exception as e:
+            current_app.logger.error(e)
 
-    collection_dict_li = []
-    for news in collections:
-        collection_dict_li.append(news.to_dict())
+        collection_dict_li = []
+        for news in collections:
+            collection_dict_li.append(news.to_dict())
 
     data = {
         "total_page": total_page,
@@ -260,3 +261,47 @@ def news_release():
 
     # 5.返回结果
     return jsonify(errno=RET.OK, errmsg="发布成功,等待审核")
+
+
+@profile_bp.route("/news_list")
+@user_login_data
+def news_list():
+
+    #获取页数
+    page_num = request.args.get("p", 1)
+    try:
+        page_num = int(page_num)
+    except Exception as e:
+        current_app.logger.error(e)
+        page_num = 1
+
+    user = g.user
+    news_list = []
+    current_page = 1
+    total_page = 1
+    try:
+        paginate = News.query.filter(News.user_id == user.id)\
+            .paginate(page_num, constants.USER_COLLECTION_MAX_NEWS, False )
+        # 获取当前页数据
+        news_list = paginate.items
+        # 获取当前页
+        current_page = paginate.page
+        # 获取总页数
+        total_page = paginate.pages
+    except Exception as e:
+        current_app.logger.error(e)
+
+    news_dict_list = []
+    for news in news_list:
+        news_dict_list.append(news.to_dict())
+
+    data = {
+        "news_list": news_dict_list,
+        "total_page": total_page,
+        "current_page": current_page
+    }
+
+    return render_template('profile/user_news_list.html', data=data)
+
+
+

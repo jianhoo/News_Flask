@@ -244,6 +244,7 @@ def logout():
     session.pop('user_id', None)
     session.pop('nick_name', None)
     session.pop('mobile', None)
+    session.pop('is_admin', None)
 
     # 返回结果
     return jsonify(errno=RET.OK, errmsg="OK")

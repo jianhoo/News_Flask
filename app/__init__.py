@@ -77,6 +77,8 @@ def create_app(config_name):
     register_news(app)
     # 个人中心的蓝图注册
     register_profile(app)
+    # 管理员后台注册
+    register_admin(app)
 
     return app
 
@@ -101,3 +103,8 @@ def register_news(app):
 def register_profile(app):
     from app.modules.profile import profile_bp
     app.register_blueprint(profile_bp)
+
+
+def register_admin(app):
+    from app.modules.admin import admin_bp
+    app.register_blueprint(admin_bp)
