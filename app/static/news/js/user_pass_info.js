@@ -19,7 +19,7 @@ $(function () {
         var confirm_password = params["confirm_password"];
 
         if (new_password != confirm_password) {
-            alert("两次密码输入不一致")
+            alert("两次密码输入不一致");
             return
         }
 

@@ -137,3 +137,44 @@ def pass_info():
         return jsonify(errno=RET.DBERR, errmsg="保存数据失败")
 
     return jsonify(errno=RET.OK, errmsg="保存成功")
+
+
+@profile_bp.route("/collection")
+@user_login_data
+def user_collection():
+    # 获取页数
+    page_num = request.args.get("p", 1)
+    try:
+        page_num = int(page_num)
+    except Exception as e:
+        current_app.logger.error(e)
+        page_num = 1
+
+    user = g.user
+    collections = []
+    current_page = 1
+    total_page = 1
+
+    try:
+        # 进行分页数据查询
+        paginate = user.collection_news.paginate(page_num, constants.USER_COLLECTION_MAX_NEWS, False)
+        # 获取分页数据
+        collections = paginate.items
+        # 获取当前页
+        current_page = paginate.page
+        # 获取总页数
+        total_page = paginate.pages
+    except Exception as e:
+        current_app.logger.error(e)
+
+    collection_dict_li = []
+    for news in collections:
+        collection_dict_li.append(news.to_dict())
+
+    data = {
+        "total_page": total_page,
+        "current_page": current_page,
+        "collections": collection_dict_li
+    }
+
+    return render_template("profile/user_collection.html", data=data)
