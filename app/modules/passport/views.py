@@ -180,6 +180,8 @@ def register():
     session["user_id"] = user.id
     session["nick_name"] = user.nick_name
     session["mobile"] = user.mobile
+    if user.is_admin:
+        session["is_admin"] = True
 
     # 6.返回注册结果
     return jsonify(errno=RET.OK, errmsg="OK")
@@ -223,6 +225,8 @@ def login():
     session["user_id"] = user.id
     session["nick_name"] = user.nick_name
     session["mobile"] = user.mobile
+    if user.is_admin:
+        session["is_admin"] = True
     # 记录用户最后一次登录时间
     user.last_login = datetime.now()
 

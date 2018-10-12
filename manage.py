@@ -1,3 +1,6 @@
+import random
+from datetime import datetime, timedelta
+
 from flask import current_app
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
@@ -35,10 +38,30 @@ def createsuperuser(name, password):
         db.session.commit()
         print("创建成功")
     except Exception as e:
-        current_app.logger.error(e)
+        print(e)
         db.session.rollback()
 
 
+# def add_test_users():
+"""添加测试数据"""
+#     users = []
+#     now = datetime.now()
+#     for num in range(0, 10000):
+#         try:
+#             user = User()
+#             user.nick_name = "%011d" % num
+#             user.mobile = "%011d" % num
+#             user.password_hash = "pbkdf2:sha256:50000$zJaie0BI$789ea9d1cda600adcffc8940031e6ece76c91768db49aab7747d45ff2a83b02a"
+#             user.last_login = now - timedelta(seconds=random.randint(0, 2678400))
+#             users.append(user)
+#             print(user.mobile)
+#         except Exception as e:
+#             print(e)
+#
+#     with app.app_context():
+#         db.session.add_all(users)
+#         db.session.commit()
+#     print('OK')
 
 
 if __name__ == '__main__':
