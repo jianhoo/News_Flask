@@ -10,7 +10,7 @@ from app.utils.response_code import RET
 from . import passport_bp
 from app.utils.captcha.captcha import captcha
 from app import redis_store, constants, db
-from flask import render_template, current_app, make_response, jsonify
+from flask import current_app, make_response, jsonify
 
 
 @passport_bp.route('/image_code')
@@ -252,4 +252,3 @@ def logout():
 
     # 返回结果
     return jsonify(errno=RET.OK, errmsg="OK")
-
